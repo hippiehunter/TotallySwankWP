@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using TotallySwankWP.External;
 using TotallySwankWP.Models;
 
@@ -13,7 +14,7 @@ namespace TotallySwankWP.DataServices
   {
     private const string HOMEPAGE_URL = "http://www.urbandictionary.com/";
 
-    public async void GetEntries(Action<IEnumerable<Entry>, Exception> callback)
+    public async Task<IEnumerable<Entry>> GetEntries()
     {
       List<Entry> entries = new List<Entry>();
 
@@ -25,8 +26,8 @@ namespace TotallySwankWP.DataServices
         s = await wc.DownloadStringTaskAsync(HOMEPAGE_URL);
       }
       catch (WebException e) {
-        callback(null, e);
-        return;
+          //because async debugging on windows phone sucks, having this here at least gives us a hint at what happened
+          throw;
       }
 
       doc.LoadHtml(s);
@@ -38,7 +39,7 @@ namespace TotallySwankWP.DataServices
         entries.Add(new Entry(name, definition, example));
       }
 
-      callback(entries, null);
+      return entries;
     }
 
   }

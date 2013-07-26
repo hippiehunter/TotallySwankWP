@@ -10,7 +10,7 @@ namespace TotallySwankWP.Design
 {
   public class DesignWOTDDataService : IWOTDDataService
   {
-    public void GetEntries(Action<IEnumerable<Entry>, Exception> callback)
+    public Task<IEnumerable<Entry>> GetEntries()
     {
       List<Entry> entries = new List<Entry>();
 
@@ -31,7 +31,7 @@ namespace TotallySwankWP.Design
                    "Damn nigga! You better put a crutch in that little prison J so we can smoke that bitch 'til the wheels fall off it!")
       );
 
-      callback(entries, null);
+      return Task.FromResult<IEnumerable<Entry>>(entries);
     }
   }
 }

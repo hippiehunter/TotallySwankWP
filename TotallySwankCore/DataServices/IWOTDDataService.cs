@@ -9,6 +9,6 @@ namespace TotallySwankWP.DataServices
 {
   public interface IWOTDDataService
   {
-    void GetEntries(Action<IEnumerable<Entry>, Exception> callback);
+    Task<IEnumerable<Entry>> GetEntries();
   }
 }

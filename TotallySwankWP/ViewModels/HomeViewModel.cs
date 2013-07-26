@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net;
+using System.Threading.Tasks;
 using TotallySwankWP.DataServices;
 using TotallySwankWP.Models;
 using TotallySwankWP.Services;
@@ -107,15 +108,16 @@ namespace TotallySwankWP.ViewModels
       _navService = navService;
 
       Loading = true;
-      _dataService.GetEntries(processEntries);
+      _dataService.GetEntries().ContinueWith(processEntries);
     }
 
-    private void processEntries (IEnumerable<Entry> entries, Exception e)
+    private void processEntries (Task<IEnumerable<Entry>> entryTask)
     {
+      var e = entryTask.Exception;
       if (e != null) {
-        if (e is WebException)
+        if (e.InnerException is WebException)
         {
-          entries = entries ?? new List<Entry>();
+            var entries = entryTask.Result ?? new List<Entry>();
           ((List<Entry>)entries).Add(
             new Entry("Woah dude!",
                       "We couldn't connect to the Urban Dictionary. You sure that you're connected to the internet?",
@@ -124,7 +126,7 @@ namespace TotallySwankWP.ViewModels
         }
       }
 
-      Entries = new ObservableCollection<Entry>(entries);
+      Entries = new ObservableCollection<Entry>(entryTask.Result);
 
       Loading = false;
     }
